@@ -1,0 +1,48 @@
+/* style.css */
+
+/* Page background */
+body, .content, .main, .page-columns {
+    background-color: #fdfcdc !important;
+    color: #0081a7;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    color: #00afb9;
+  }
+  
+  /* Code blocks */
+  pre, code {
+    background-color: #fed9b7;
+    color: #f07167;
+  }
+  
+  /* Code chunks box (quarto specific) */
+  div.sourceCode, pre.sourceCode {
+    background-color: #fed9b7 !important;
+    color: #f07167 !important;
+  }
+  
+  /* Output blocks */
+  .cell-output, .cell-output-stdout {
+    background-color: #fdfcdc;
+    color: #0081a7;
+  }
+  
+  /* Table of Contents */
+  #TOC {
+    background-color: #fed9b7;
+    border-left: 3px solid #f07167;
+    padding: 10px;
+  }
+  
+  /* Links */
+  a {
+    color: #00afb9;
+  }
+  
+  a:hover {
+    color: #f07167;
+  }
+  

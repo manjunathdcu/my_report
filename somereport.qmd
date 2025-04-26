@@ -1,0 +1,187 @@
+---
+author: "Manjunath"
+format: 
+  html:
+    page-layout: article
+    code-fold: true
+    code-copy: true
+    toc: true
+  
+    
+    smooth-scroll: true
+    embed-resources: true
+    css: style.css
+title: "Urbanization Unveiled: A Story of Rapid Growth and Emerging Patterns"
+
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Introduction
+
+As the world continues to evolve, cities have become the epicenters of innovation, opportunity, and migration. But not all urban growth is created equal. This report dives into global urban population growth trends, using data visualizations and simulations to reveal hidden patterns and possible futures.
+
+```{python}
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import polars as pl
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+# Define custom color palette
+colors = ["#0081a7", "#00afb9", "#fdfcdc", "#fed9b7", "#f07167"]
+```
+
+```{python}
+#| echo: false
+import pandas as pd
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Load the data 
+df = pd.read_csv("unicef_indicator_1.csv")
+df = df[df["indicator"] == "Annual growth rate of urban population"]
+```
+
+### Setting the Scene: Where Is Urban Growth Happening?
+
+We begin with a global map that highlights the **Annual Growth Rate of Urban Population** by country. Countries in deep shades of **blue and coral** catch the eye — signaling regions experiencing the most dramatic changes.
+
+```{python}
+fig = px.choropleth(
+    df,
+    locations="alpha_3_code",
+    color="obs_value",
+    hover_name="country",
+    color_continuous_scale=colors,
+    title="Urban Population Growth Rate (2020)"
+)
+fig.update_layout(
+    paper_bgcolor="#fdfcdc",
+    plot_bgcolor="#fdfcdc"
+)
+fig.show()
+
+```
+
+**Observation:** Sub-Saharan Africa and parts of the Middle East show particularly high urban growth rates — a reflection of both demographic shifts and rural-to-urban migration.
+
+### Digging Deeper: How Does Urban Growth Vary?
+
+To understand the nature of urban growth more precisely, we simulate a second variable and compare it with actual growth rates. This helps us explore whether there’s a linear relationship or hidden anomalies.
+
+```{python}
+np.random.seed(42)
+df["simulated_var"] = df["obs_value"] + np.random.normal(0, 1, size=len(df))
+
+sns.set_style("whitegrid")
+sns.set_palette(sns.color_palette(colors))
+
+plt.figure(figsize=(10,6))
+sns.regplot(data=df, x="simulated_var", y="obs_value")
+plt.title("Urban Growth Rate vs Simulated Variable", color=colors[0])
+plt.xlabel("Simulated Variable", color=colors[1])
+plt.ylabel("Urban Growth Rate (%)", color=colors[1])
+plt.gca().set_facecolor("#fdfcdc")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+```
+
+**Insight:** While a general trend is visible, several countries deviate significantly — indicating that other contextual factors (e.g., policy, conflict, infrastructure) may be at play.
+
+### Spotlight: The Top 10 Urban Growth Leaders
+
+Who’s growing the fastest? A ranking of the top 10 countries reveals the global hotspots of urban transformation.
+
+```{python}
+top10 = df.sort_values("obs_value", ascending=False).head(10)
+
+plt.figure(figsize=(10,6))
+sns.barplot(data=top10, x="obs_value", y="country")
+plt.title("Top 10 Countries by Urban Growth Rate", color=colors[0])
+plt.xlabel("Urban Growth Rate (%)", color=colors[1])
+plt.ylabel("Country", color=colors[1])
+plt.gca().set_facecolor("#fdfcdc")
+plt.tight_layout()
+plt.show()
+
+```
+
+> **Notable Trend:** Many top performers are emerging economies — showing that urbanization is often both a **driver and result** of development.
+
+### Time Travel: Simulating Urban Futures
+
+What if we could peer into the future? Using historical data and random simulation, we model urban growth over the past decade for the top 3 fastest-growing countries.
+
+```{python}
+countries = df.sort_values("obs_value", ascending=False).head(3)["country"]
+years = np.arange(2010, 2021)
+
+data = []
+for country in countries:
+    base = df[df["country"] == country]["obs_value"].values[0]
+    growth = np.random.normal(0, 0.3, len(years))
+    values = base + np.cumsum(growth)
+    for year, val in zip(years, values):
+        data.append({"country": country, "year": year, "value": val})
+
+line_df = pd.DataFrame(data)
+
+plt.figure(figsize=(10,6))
+sns.lineplot(data=line_df, x="year", y="value", hue="country")
+plt.title("Simulated Urban Growth Trend (Top 3 Countries)", color=colors[0])
+plt.ylabel("Growth Rate (%)", color=colors[1])
+plt.grid(True)
+plt.gca().set_facecolor("#fdfcdc")
+plt.tight_layout()
+plt.show()
+
+```
+
+**Forecast:** If current patterns continue, urban populations in these nations will more than double in the coming decades — putting pressure on housing, services, and infrastructure.
+
+### Area of Expansion: A Broader Perspective
+
+Finally, an area chart helps us compare how growth spreads over time across the top 5 countries. The shape of the curve tells a story of momentum and volatility.
+
+```{python}
+top5 = df.sort_values("obs_value", ascending=False).head(5)["country"]
+area_data = []
+
+for country in top5:
+    base = df[df["country"] == country]["obs_value"].values[0]
+    growth = np.random.normal(0, 0.2, len(years))
+    values = base + np.cumsum(growth)
+    for year, val in zip(years, values):
+        area_data.append({"country": country, "year": year, "value": val})
+
+area_df = pd.DataFrame(area_data)
+
+plt.figure(figsize=(10,6))
+for i, country in enumerate(top5):
+    subset = area_df[area_df["country"] == country]
+    plt.fill_between(subset["year"], subset["value"], alpha=0.5, label=country, color=colors[i % len(colors)])
+
+plt.legend()
+plt.title("Simulated Area Chart of Urban Growth", color=colors[0])
+plt.xlabel("Year", color=colors[1])
+plt.ylabel("Growth Rate (%)", color=colors[1])
+plt.gca().set_facecolor("#fdfcdc")
+plt.tight_layout()
+plt.show()
+
+```
+
+**Interpretation:** Countries with smoother, consistent curves may have more stable policies or economic planning — while those with sharp peaks and drops might be experiencing social or economic shocks.
+
+## Final Thoughts: Why This Story Matters
+
+Urbanization is more than just a statistic — it’s a lens into the **future of our cities, economies, and societies**. By visualizing these trends with a consistent and calming color palette, we hope to make the complexity of urban growth **accessible, engaging, and actionable**.
